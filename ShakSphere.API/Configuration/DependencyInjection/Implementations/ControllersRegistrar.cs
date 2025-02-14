@@ -1,6 +1,8 @@
 ﻿using Asp.Versioning;
+using FluentValidation;
+using Microsoft.AspNetCore.Diagnostics;
 using ShakSphere.API.Configuration.DependencyInjection.Abstractions;
-using ShakSphere.API.Options;
+using ShakSphere.Application.Models;
 
 namespace ShakSphere.API.Configuration.DependencyInjection.Implementations
 {
@@ -8,6 +10,9 @@ namespace ShakSphere.API.Configuration.DependencyInjection.Implementations
     {
         public void RegisterServices(WebApplicationBuilder builder)
         {
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+            builder.Services.AddProblemDetails();
+
             builder.Services.AddControllers();
 
             builder.Services.AddApiVersioning(options =>

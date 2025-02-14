@@ -6,6 +6,8 @@ using ShakSphere.Application.UseCases.AppUserProfile.Commands;
 using AutoMapper;
 using ShakSphere.Application.Contracts.UserProfile.Response;
 using ShakSphere.Application.UseCases.AppUserProfile.Queries;
+using ShakSphere.API.Filters;
+using ShakSphere.Application.Behaviors;
 namespace ShakSphere.API.Controllers.V1
 {
     [ApiController]
@@ -33,6 +35,7 @@ namespace ShakSphere.API.Controllers.V1
         }
 
         [HttpPost]
+        [ModelValidation]
         public async Task<IActionResult> CreateUser([FromBody] AppUserCreateRequestDTO user)
         {
             var command = _mapper.Map<CreateUserCommand>(user);
@@ -51,7 +54,7 @@ namespace ShakSphere.API.Controllers.V1
             {
                 return BadRequest(response);
             }
-            var userprofile = _mapper.Map<AppUserResponseDTO>(response);
+            var userprofile = _mapper.Map<AppUserResponseDTO>(response.Payload);
             return Ok(userprofile);
         }
         [HttpPut("{Id}")]

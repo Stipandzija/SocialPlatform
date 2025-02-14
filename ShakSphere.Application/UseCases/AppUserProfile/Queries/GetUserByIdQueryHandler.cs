@@ -18,7 +18,7 @@ namespace ShakSphere.Application.UseCases.AppUserProfile.Queries
         public async Task<ResponseStatus<ApplicationUser>> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
             var response = new ResponseStatus<ApplicationUser>();
-            var user = await _context.ApplicationUsers.FirstOrDefaultAsync(x => x.AppUserId == request.UserId);
+            var user = await _context.ApplicationUsers.FirstOrDefaultAsync(x => x.AppUserId == request.UserId, cancellationToken);
             if (user == null)
             {
                 response.Success = false;

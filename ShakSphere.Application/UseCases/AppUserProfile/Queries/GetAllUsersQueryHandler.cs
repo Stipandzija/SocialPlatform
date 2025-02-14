@@ -19,7 +19,7 @@ namespace ShakSphere.Application.UseCases.AppUserProfile.Queries
         }
         public async Task<List<ApplicationUser>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken) 
         {
-            return await _context.ApplicationUsers.ToListAsync();
+            return await _context.ApplicationUsers.ToListAsync(cancellationToken);
         }
     }
 }
