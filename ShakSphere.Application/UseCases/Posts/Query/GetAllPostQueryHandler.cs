@@ -29,7 +29,7 @@ namespace ShakSphere.Application.UseCases.Posts.Query
 
                 return response;
             }
-            var posts = await _context.Posts.ToListAsync(cancellationToken);
+            var posts = await _context.Posts.Include(p=>p.Comments).ToListAsync(cancellationToken);
             response.Payload = posts;
             return response;
         }

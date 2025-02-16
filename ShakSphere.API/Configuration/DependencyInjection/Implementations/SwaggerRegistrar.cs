@@ -1,7 +1,4 @@
-﻿using ShakSphere.API.Options;
-using ShakSphere.API.Configuration.DependencyInjection.Abstractions;
-
-namespace ShakSphere.API.Configuration.DependencyInjection.Implementations
+﻿namespace ShakSphere.API.Configuration.DependencyInjection.Implementations
 {
     public class SwaggerRegistrar : IServiceRegistrar
     {

@@ -1,6 +1,4 @@
-﻿using ShakSphere.API.Configuration.DependencyInjection.Abstractions;
-
-namespace ShakSphere.API.Configuration.Middleware.Implementations
+﻿namespace ShakSphere.API.Configuration.Middleware.Implementations
 {
     public static class MiddlewareRegistrar
     {

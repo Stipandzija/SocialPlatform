@@ -1,9 +1,4 @@
-﻿using Asp.Versioning.ApiExplorer;
-using Microsoft.Extensions.Options;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
-
-namespace ShakSphere.API.Options
+﻿namespace ShakSphere.API.Options
 {
     public class ConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
     {
@@ -31,6 +26,30 @@ namespace ShakSphere.API.Options
             {
                 options.SwaggerDoc(description.GroupName, CreateVersionInfo(description));
             }
+            var scheme = securityScheme();
+            options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, scheme);
+            //zahtjev za sve rute
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                { scheme, new string[] {} }
+            });
+        }
+        private OpenApiSecurityScheme securityScheme()
+        {
+            return new OpenApiSecurityScheme
+            {
+                In = ParameterLocation.Header,
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                Description = "Enter JWT token",
+                Reference = new OpenApiReference 
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = JwtBearerDefaults.AuthenticationScheme
+                }
+            };
         }
     }
 }

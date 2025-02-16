@@ -9,7 +9,7 @@ using ShakSphere.Domain.Aggregates.UserProfileAggregate.Definitions;
 
 namespace ShakSphere.Infrastructure.Data
 {
-    public class AppDbContext : IdentityDbContext<ApplicationUser>, IAppDbContext
+    public class AppDbContext : IdentityDbContext<IdentityUser>, IAppDbContext
     {
         public AppDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions) { }
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }

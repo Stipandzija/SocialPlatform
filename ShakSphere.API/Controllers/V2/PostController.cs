@@ -1,7 +1,4 @@
-﻿using Asp.Versioning;
-using Microsoft.AspNetCore.Mvc;
-
-namespace ShakSphere.API.Controllers.V2
+﻿namespace ShakSphere.API.Controllers.V2
 {
     [ApiController]
     [ApiVersion("2.0")]

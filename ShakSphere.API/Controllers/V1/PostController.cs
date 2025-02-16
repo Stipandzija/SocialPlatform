@@ -1,13 +1,4 @@
-﻿using Asp.Versioning;
-using AutoMapper;
-using MediatR;
-using Microsoft.AspNetCore.Mvc;
-using ShakSphere.Application.Contracts.Posts.Request;
-using ShakSphere.Application.Contracts.Posts.Response;
-using ShakSphere.Application.UseCases.Posts.Command;
-using ShakSphere.Application.UseCases.Posts.Query;
-
-namespace ShakSphere.API.Controllers.V1
+﻿namespace ShakSphere.API.Controllers.V1
 {
     [ApiController]
     [ApiVersion("1.0")]
@@ -88,6 +79,48 @@ namespace ShakSphere.API.Controllers.V1
                 return BadRequest(result);
             }
             return NoContent();
+        }
+
+        [HttpGet("{postId}/comments")]
+        public async Task<IActionResult> GetPostComments([FromRoute] string postId)
+        {
+            var query = new GetPostCommentsByIDQuery { PostId = Guid.Parse(postId) };
+            var result = await _mediator.Send(query);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            var mappedComments = _mapper.Map<List<PostCommentResponseDTO>>(result.Payload);
+            return Ok(mappedComments);
+        }
+        [HttpPost("{postId}/comments")]
+        public async Task<IActionResult> AddComment([FromRoute] string postId, [FromBody] CreateCommentDTO createCommentDTO)
+            // TO Do provjera guida unutar zahtjeva
+        {
+            if (!Guid.TryParse(createCommentDTO.UserId, out var UserId)) 
+            {
+                return BadRequest("Guid nije pravilnog formata");
+            }
+
+            var command = new AddCommentCommand
+            {
+                PostId = Guid.Parse(postId),
+                Comment = createCommentDTO.Text,
+                UserId = UserId
+            };
+
+            var result = await _mediator.Send(command);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            var mappedComment = _mapper.Map<PostCommentResponseDTO>(result.Payload);
+            return Ok(mappedComment);
+        }
+        [HttpGet("{postId}/comments/{commentId}")]
+        public async Task<IActionResult> updatecomment() 
+        {
+            return Ok();
         }
     }
 }

@@ -1,11 +1,4 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using ShakSphere.Domain.CustomExceptions;
-using System.Diagnostics;
-using System.Net;
-
-namespace ShakSphere.Application.Models
+﻿namespace ShakSphere.Application.Models
 {
     public class GlobalExceptionHandler : IExceptionHandler
     {

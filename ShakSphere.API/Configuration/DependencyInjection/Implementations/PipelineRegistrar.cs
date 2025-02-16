@@ -1,8 +1,4 @@
-﻿using Asp.Versioning.ApiExplorer;
-using ShakSphere.API.Configuration.DependencyInjection.Abstractions;
-using ShakSphere.Application.Models;
-
-namespace ShakSphere.API.Configuration.DependencyInjection.Implementations
+﻿namespace ShakSphere.API.Configuration.DependencyInjection.Implementations
 {
     public class PipelineRegistrar : IWebApplicationRegister
     {

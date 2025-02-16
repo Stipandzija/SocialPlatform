@@ -1,14 +1,4 @@
-﻿using Asp.Versioning;
-using Microsoft.AspNetCore.Mvc;
-using ShakSphere.Application.Contracts.UserProfile.Request;
-using MediatR;
-using ShakSphere.Application.UseCases.AppUserProfile.Commands;
-using AutoMapper;
-using ShakSphere.Application.Contracts.UserProfile.Response;
-using ShakSphere.Application.UseCases.AppUserProfile.Queries;
-using ShakSphere.API.Filters;
-using ShakSphere.Application.Behaviors;
-namespace ShakSphere.API.Controllers.V1
+﻿namespace ShakSphere.API.Controllers.V1
 {
     [ApiController]
     [ApiVersion("1.0")]

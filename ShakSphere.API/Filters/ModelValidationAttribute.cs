@@ -1,7 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.AspNetCore.Mvc;
-
-namespace ShakSphere.API.Filters
+﻿namespace ShakSphere.API.Filters
 {
     public class ModelValidationAttribute : ActionFilterAttribute
     {

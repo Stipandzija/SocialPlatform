@@ -1,9 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ShakSphere.API.Configuration.DependencyInjection.Abstractions;
-using ShakSphere.Application.DataInterface;
-using ShakSphere.Infrastructure.Data;
-
-namespace ShakSphere.API.Configuration.DependencyInjection.Implementations
+﻿namespace ShakSphere.API.Configuration.DependencyInjection.Implementations
 {
     public class DatabaseRegistrar : IServiceRegistrar
     {
@@ -13,6 +8,15 @@ namespace ShakSphere.API.Configuration.DependencyInjection.Implementations
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             builder.Services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
+
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            {
+                options.Password.RequiredLength = 8;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = true;
+                options.Password.RequireDigit = true;
+            }).AddEntityFrameworkStores<AppDbContext>(); ;
+
         }
     }
 }

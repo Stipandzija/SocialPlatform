@@ -48,7 +48,7 @@ namespace ShakSphere.API.Aggregates.PostAggregate.Definitions
         }
         public void AddPostComment(PostComment newComment) 
         {
-            this.Comments.Add(newComment);
+            Comments.Add(newComment);
         }
         public void RemovePostComment(PostComment postComment) 
         {

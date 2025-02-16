@@ -5,6 +5,7 @@ namespace ShakSphere.Domain.Aggregates.UserProfileAggregate.Definitions
 {
     public class ApplicationUser : IdentityUser
     {
+        //TO DO: DODAVANJE BLOGA I POBLOG POVEYIAVANJE NA POST
         public Guid AppUserId { get; private set; }
         public string? IdentityId { get; private set; }
         public BasicInfo BasicInfo { get; private set; }

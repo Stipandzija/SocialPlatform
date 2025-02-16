@@ -1,12 +1,4 @@
-﻿using FluentValidation;
-using MediatR;
-using ShakSphere.API.Configuration.DependencyInjection.Abstractions;
-using ShakSphere.Application.Behaviors;
-using ShakSphere.Application.UseCases.AppUserProfile.Queries;
-using ShakSphere.Application.UseCases.AppUserProfile.Queries.QueryValidators;
-using System.Reflection;
-
-namespace ShakSphere.API.Configuration.DependencyInjection.Implementations
+﻿namespace ShakSphere.API.Configuration.DependencyInjection.Implementations
 {
     public class MediatRRegistrar : IServiceRegistrar
     {

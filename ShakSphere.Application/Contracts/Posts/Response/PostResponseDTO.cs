@@ -3,7 +3,7 @@
     public class PostResponseDTO
     {
         public Guid PostId { get; set; }
-        public string UserName { get; set; }
+        public string AppUserId { get; set; }
         public string TextContent { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime LastModified { get; set; }

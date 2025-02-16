@@ -1,10 +1,4 @@
-﻿using Asp.Versioning;
-using FluentValidation;
-using Microsoft.AspNetCore.Diagnostics;
-using ShakSphere.API.Configuration.DependencyInjection.Abstractions;
-using ShakSphere.Application.Models;
-
-namespace ShakSphere.API.Configuration.DependencyInjection.Implementations
+﻿namespace ShakSphere.API.Configuration.DependencyInjection.Implementations
 {
     public class ControllersRegistrar : IServiceRegistrar
     {
