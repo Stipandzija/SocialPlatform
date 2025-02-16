@@ -1,5 +1,7 @@
 ﻿using ShakSphere.Domain.Aggregates.PostAggregate.Definitions;
 using ShakSphere.Domain.Aggregates.UserProfileAggregate.Definitions;
+using ShakSphere.Domain.AggregateValidator.PostValidators;
+using ShakSphere.Domain.CustomExceptions;
 
 namespace ShakSphere.API.Aggregates.PostAggregate.Definitions
 {
@@ -11,22 +13,33 @@ namespace ShakSphere.API.Aggregates.PostAggregate.Definitions
         public string TextContent { get; private set; }
         public DateTime CreatedDate { get; private set; }
         public DateTime LastModified { get; private set; }
-        public List<PostComment> Comments { get; private set; }
-        public List<PostInteraction> PostInteraction { get; private set; }
-        private Post()
+        public List<PostComment> Comments { get; private set; } = new();
+        public List<PostInteraction> PostInteraction { get; private set; } = new();
+        private Post() { }
+        public static Post CreatePost(Guid appUserId, string textContext, ApplicationUser applicationUser)
         {
-            Comments = new List<PostComment>();
-            PostInteraction = new List<PostInteraction>();
-        }
-        public static Post CreatePost(Guid appUserId, string textContext)
-        {
-            return new Post
+            var validation = new PostValidation();
+            var post = new Post
             {
+                Postid = Guid.NewGuid(),
+                AppUser = applicationUser,
                 AppUserId = appUserId,
                 TextContent = textContext,
                 CreatedDate = DateTime.Now,
                 LastModified = DateTime.Now
             };
+            var result = validation.Validate(post);
+            if (!result.IsValid)
+            {
+                var errors = new List<string>();
+                foreach (var error in result.Errors)
+                {
+                    errors.Add($"{error.PropertyName}: {error.ErrorMessage}");
+                }
+
+                throw new PostValidationException(errors);
+            }
+            return post;
         }
         public void UpdatePost(string newtext) 
         {

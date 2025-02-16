@@ -7,14 +7,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ShakSphere.Domain\ShakSphere.Domain.csproj" />
+    <Compile Remove="Contracts\Posts - Copy\**" />
+    <Compile Remove="Contracts\Post\**" />
+    <Compile Remove="UseCases\Post - Copy\**" />
+    <Compile Remove="UseCases\Post\**" />
+    <EmbeddedResource Remove="Contracts\Posts - Copy\**" />
+    <EmbeddedResource Remove="Contracts\Post\**" />
+    <EmbeddedResource Remove="UseCases\Post - Copy\**" />
+    <EmbeddedResource Remove="UseCases\Post\**" />
+    <None Remove="Contracts\Posts - Copy\**" />
+    <None Remove="Contracts\Post\**" />
+    <None Remove="UseCases\Post - Copy\**" />
+    <None Remove="UseCases\Post\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Contracts\Post\Request\" />
-    <Folder Include="Contracts\Post\Response\" />
-    <Folder Include="UseCases\Post\Commands\" />
-    <Folder Include="UseCases\Post\Queries\" />
+    <ProjectReference Include="..\ShakSphere.Domain\ShakSphere.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>

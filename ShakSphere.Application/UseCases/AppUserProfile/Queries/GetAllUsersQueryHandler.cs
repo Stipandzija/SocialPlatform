@@ -2,11 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ShakSphere.Application.DataInterface;
 using ShakSphere.Domain.Aggregates.UserProfileAggregate.Definitions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace ShakSphere.Application.UseCases.AppUserProfile.Queries
 {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ShakSphere.Domain.CustomExceptions;
 using System.Diagnostics;
 using System.Net;
 
@@ -39,12 +40,20 @@ namespace ShakSphere.Application.Models
                     problem.Title = "Resource not found";
                     break;
 
+                case PostValidationException ex:
+                    statusCode = HttpStatusCode.BadRequest;
+                    problem.Title = "Post validation failed";
+                    problem.Extensions.Add("errors", ex.Errors);
+                    break;
+
+                case PostCommentValidationException ex:
+                    statusCode = HttpStatusCode.BadRequest;
+                    problem.Title = "Postcomment validation failed";
+                    problem.Extensions.Add("errors", ex.Errors);
+                    break;
 
                 default:
-
                     statusCode = HttpStatusCode.InternalServerError;
-                    message = "System.FormatException";
-                    problem.Title = message;
                     problem.Extensions.Add("exception", exception.Message);
                     break;
             }

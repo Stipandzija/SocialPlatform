@@ -1,4 +1,7 @@
-﻿namespace ShakSphere.Domain.Aggregates.PostAggregate.Definitions
+﻿using ShakSphere.Domain.AggregateValidator.PostValidators;
+using ShakSphere.Domain.CustomExceptions;
+
+namespace ShakSphere.Domain.Aggregates.PostAggregate.Definitions
 {
     public class PostComment
     {
@@ -11,32 +14,39 @@
 
         private PostComment() { }
 
-        private PostComment(Guid commentId, Guid postId, string text, Guid userProfileId, DateTime dateOfCreation, DateTime lastModified)
-        {
-            CommentId = commentId;
-            PostId = postId;
-            Text = text;
-            UserProfileID = userProfileId;
-            DateOfCreation = dateOfCreation;
-            LastModified = lastModified;
-        }
+        //private PostComment(Guid commentId, Guid postId, string text, Guid userProfileId, DateTime dateOfCreation, DateTime lastModified)
+        //{
+        //    CommentId = commentId;
+        //    PostId = postId;
+        //    Text = text;
+        //    UserProfileID = userProfileId;
+        //    DateOfCreation = dateOfCreation;
+        //    LastModified = lastModified;
+        //}
 
         public static PostComment CreatePostComment(Guid postId, string text, Guid userProfileId)
         {
-            if (string.IsNullOrEmpty(text))
+            var validator = new PostCommentValidatoion();
+            var postcomment = new PostComment
             {
-                throw new ArgumentException("Text is empty");
-            }
-
-            if (postId == Guid.Empty || userProfileId == Guid.Empty)
+                PostId = postId,
+                Text = text,
+                UserProfileID = userProfileId,
+                DateOfCreation = DateTime.Now,
+                LastModified = DateTime.Now
+            };
+            var result = validator.Validate(postcomment);
+            if (!result.IsValid)
             {
-                throw new ArgumentException("Id must be valid");
+                var errors = new List<string>();
+                foreach (var error in result.Errors)
+                {
+                    errors.Add($"{error.PropertyName}: {error.ErrorMessage}");
+                }
+
+                throw new PostCommentValidationException(errors);
             }
-
-            var commentId = Guid.NewGuid();
-            var currentTime = DateTime.UtcNow;
-
-            return new PostComment(commentId, postId, text, userProfileId, currentTime, currentTime);
+            return postcomment;
         }
     }
 
