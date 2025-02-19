@@ -7,6 +7,7 @@ using ShakSphere.Application.Models;
 using ShakSphere.Domain.Aggregates.UserProfileAggregate;
 using ShakSphere.Domain.Aggregates.UserProfileAggregate.Definitions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 
 namespace ShakSphere.Application.UseCases.AppUserProfile.Commands
 {
@@ -14,11 +15,13 @@ namespace ShakSphere.Application.UseCases.AppUserProfile.Commands
     {
         private readonly IAppDbContext _context;
         private readonly ILogger<UpdateUserCommandHandler> _logger;
+        private readonly UserManager<IdentityUser>  _userManager;
 
-        public UpdateUserCommandHandler(IAppDbContext appDbContext, ILogger<UpdateUserCommandHandler> logger)
+        public UpdateUserCommandHandler(IAppDbContext appDbContext, ILogger<UpdateUserCommandHandler> logger, UserManager<IdentityUser> userManager)
         {
             _context = appDbContext;
             _logger = logger;
+            _userManager = userManager;
         }
 
         public async Task<ResponseStatus<ApplicationUser>> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
@@ -39,12 +42,40 @@ namespace ShakSphere.Application.UseCases.AppUserProfile.Commands
 
                 return response;
             }
+            using var transaction = _context.Database.BeginTransaction();
 
-            var info = BasicInfo.UpdateBasicInfo(request.FirstName, request.LastName, request.CurrentCity);
-            user.UpdateUserBasicInfo(info);
+            try 
+            {
+                var info = BasicInfo.UpdateBasicInfo(request.FirstName, request.LastName, request.CurrentCity, request.Email);
+                user.UpdateUserBasicInfo(info);
+                _context.ApplicationUsers.Update(user);
+                await _context.SaveChangesAsync(cancellationToken);
+                var userUpdate = await _userManager.FindByEmailAsync(request.Email);
+                if (userUpdate != null)
+                {
+                    userUpdate.Email = request.Email;
+                    await _userManager.UpdateAsync(userUpdate);
+                    await transaction.CommitAsync(cancellationToken);
+                }
+                else
+                {
+                    await transaction.RollbackAsync(cancellationToken);
+                    response.Success = false;
+                    response.Errors.Add(new ProblemDetails
+                    {
+                        Title = "Updateuser error",
+                        Status = StatusCodes.Status404NotFound
+                    });
+                    return response;
+                }
+                    
+            }
+            catch (Exception ex) 
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                throw;
+            }
 
-            _context.ApplicationUsers.Update(user);
-            await _context.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation($"User {request.Id} updated successfully");
             response.Payload = user;

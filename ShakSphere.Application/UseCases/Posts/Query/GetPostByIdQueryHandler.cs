@@ -18,7 +18,7 @@ namespace ShakSphere.Application.UseCases.Posts.Query
         public async Task<ResponseStatus<Post>> Handle(GetPostByIdQuery request, CancellationToken cancellationToken)
         {
             var result = new ResponseStatus<Post>();
-            var post = await _context.Posts.Include(p => p.Comments).FirstOrDefaultAsync(x => x.Postid == request.Id, cancellationToken);
+            var post = await _context.Posts.Include(p => p.Comments).FirstOrDefaultAsync(x => x.PostId == request.Id, cancellationToken);
             if (post == null) 
             {
                 result.Success = false;

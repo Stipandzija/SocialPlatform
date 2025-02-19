@@ -19,7 +19,7 @@ namespace ShakSphere.Application.UseCases.Posts.Command
         public async Task<ResponseStatus<PostComment>> Handle(AddCommentCommand request, CancellationToken cancellationToken)
         {
             var response = new ResponseStatus<PostComment>();
-            var result = await _appDbContext.Posts.Where(x => x.AppUserId == request.UserId && x.Postid == request.PostId).FirstOrDefaultAsync(cancellationToken);
+            var result = await _appDbContext.Posts.Where(x => x.AppUserId == request.UserId && x.PostId == request.PostId).FirstOrDefaultAsync(cancellationToken);
 
             if (result == null)
             {

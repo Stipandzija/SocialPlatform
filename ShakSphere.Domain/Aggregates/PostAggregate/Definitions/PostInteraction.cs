@@ -1,11 +1,14 @@
-﻿namespace ShakSphere.Domain.Aggregates.PostAggregate.Definitions
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using ShakSphere.API.Aggregates.PostAggregate.Definitions;
+
+namespace ShakSphere.Domain.Aggregates.PostAggregate.Definitions
 {
     public class PostInteraction
     {
         public Guid InteractionId { get; private set; }
         public Guid PostId { get; private set; }
         public EmotionType Emotions { get; private set; }
-
         private PostInteraction(Guid interactionId, Guid postId, EmotionType emotions)
         {
             InteractionId = interactionId;

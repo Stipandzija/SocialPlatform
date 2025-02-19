@@ -18,7 +18,7 @@ namespace ShakSphere.Application.UseCases.Posts.Command
         public async Task<ResponseStatus<Post>> Handle(CreatePostCommand request, CancellationToken cancellationToken)
         {
             var response = new ResponseStatus<Post>();
-            var user = await _appDbContext.ApplicationUsers.FirstOrDefaultAsync(x=>x.AppUserId==request.UserId, cancellationToken);
+            var user = await _appDbContext.ApplicationUsers.FirstOrDefaultAsync(x => x.IdentityId == request.UserId.ToString(), cancellationToken);
             if (user == null) 
             {
                 response.Success = false;

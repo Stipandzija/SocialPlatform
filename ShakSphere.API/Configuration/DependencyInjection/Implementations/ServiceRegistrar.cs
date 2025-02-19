@@ -4,19 +4,20 @@
     {
         public static void RegisterServices(this WebApplicationBuilder builder, Type scanningType)
         {
-            var registrars = GetRegistrars<IServiceRegistrar>(scanningType);
+            new ControllersRegistrar().RegisterServices(builder);
+
+            var registrars = scanningType.Assembly.GetTypes()
+                .Where(t => typeof(IServiceRegistrar).IsAssignableFrom(t)
+                    && !t.IsInterface
+                    && !t.IsAbstract
+                    && t != typeof(ControllersRegistrar))
+                .Select(t => (IServiceRegistrar)ActivatorUtilities.CreateInstance(builder.Services.BuildServiceProvider(), t))
+                .ToList();
+
             foreach (var registrar in registrars)
             {
                 registrar.RegisterServices(builder);
             }
-        }
-
-        private static IEnumerable<T> GetRegistrars<T>(Type scanningType) where T : IServiceRegistrar
-        {
-            return scanningType.Assembly.GetTypes()
-                .Where(t => typeof(T).IsAssignableFrom(t) && !t.IsAbstract && !t.IsInterface)
-                .Select(Activator.CreateInstance)
-                .Cast<T>();
         }
     }
 }

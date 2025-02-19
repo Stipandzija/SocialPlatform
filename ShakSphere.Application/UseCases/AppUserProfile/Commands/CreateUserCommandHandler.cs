@@ -20,7 +20,7 @@ namespace ShakSphere.Application.UseCases.AppUserProfile.Commands
         public async Task<ApplicationUser> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
             _logger.LogInformation($"Creating new user profile");
-            var basicInfo = BasicInfo.CreateBasicInfo(request.FirstName, request.LastName, request.DateOfBirth, request.CurrentCity);
+            var basicInfo = BasicInfo.CreateBasicInfo(request.FirstName, request.LastName, request.DateOfBirth, request.CurrentCity,request.Email);
             var user = ApplicationUser.CreateUserProfile(Guid.NewGuid().ToString(), basicInfo);
             
             await _context.ApplicationUsers.AddAsync(user, cancellationToken);

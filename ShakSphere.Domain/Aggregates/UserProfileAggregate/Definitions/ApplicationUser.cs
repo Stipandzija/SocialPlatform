@@ -1,22 +1,14 @@
-﻿
-using Microsoft.AspNetCore.Identity;
-
-namespace ShakSphere.Domain.Aggregates.UserProfileAggregate.Definitions
+﻿namespace ShakSphere.Domain.Aggregates.UserProfileAggregate.Definitions
 {
-    public class ApplicationUser : IdentityUser
+    public class ApplicationUser 
     {
-        //TO DO: DODAVANJE BLOGA I POBLOG POVEYIAVANJE NA POST
         public Guid AppUserId { get; private set; }
-        public string? IdentityId { get; private set; }
-        public BasicInfo BasicInfo { get; private set; }
+        public string IdentityId { get; private set; }
+        public BasicInfo? BasicInfo { get; private set; }
         public DateTime? DateOfCreation { get; private set; }
         public DateTime? LastModified { get; private set; }
-
-        private ApplicationUser()
-        {
-
-        }
-        public static ApplicationUser CreateUserProfile(string Id, BasicInfo basicInfo)
+        private ApplicationUser() { }
+        public static ApplicationUser CreateUserProfile(string Id,BasicInfo? basicInfo)
         {
             // TO DO: validation
             var userProfile = new ApplicationUser

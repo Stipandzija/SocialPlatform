@@ -20,7 +20,7 @@ namespace ShakSphere.Application.UseCases.Posts.Command
         public async Task<ResponseStatus<Post>> Handle(DeletePostCommand request, CancellationToken cancellationToken)
         {
             var response = new ResponseStatus<Post>();
-            var post = await _appDbContext.Posts.FirstOrDefaultAsync(x => x.Postid == request.Id, cancellationToken);
+            var post = await _appDbContext.Posts.FirstOrDefaultAsync(x => x.PostId == request.Id, cancellationToken);
             if (post == null)
             {
                 response.Success = false;

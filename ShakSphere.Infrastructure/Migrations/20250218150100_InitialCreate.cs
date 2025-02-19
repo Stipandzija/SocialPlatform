@@ -8,11 +8,30 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ShakSphere.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "ApplicationUsers",
+                columns: table => new
+                {
+                    AppUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IdentityId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    BasicInfo_FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BasicInfo_LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BasicInfo_Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BasicInfo_DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    BasicInfo_CurrentCity = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateOfCreation = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApplicationUsers", x => x.AppUserId);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -32,14 +51,6 @@ namespace ShakSphere.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    AppUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    IdentityId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BasicInfo_FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BasicInfo_LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    BasicInfo_DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    BasicInfo_CurrentCity = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DateOfCreation = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -58,6 +69,27 @@ namespace ShakSphere.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Posts",
+                columns: table => new
+                {
+                    PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AppUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TextContent = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Posts", x => x.PostId);
+                    table.ForeignKey(
+                        name: "FK_Posts_ApplicationUsers_AppUserId",
+                        column: x => x.AppUserId,
+                        principalTable: "ApplicationUsers",
+                        principalColumn: "AppUserId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -167,35 +199,13 @@ namespace ShakSphere.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Posts",
-                columns: table => new
-                {
-                    Postid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AppUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AppUserId1 = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TextContent = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LastModified = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Posts", x => x.Postid);
-                    table.ForeignKey(
-                        name: "FK_Posts_AspNetUsers_AppUserId1",
-                        column: x => x.AppUserId1,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PostComment",
                 columns: table => new
                 {
                     CommentId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     PostId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    AppUserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserProfileID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     DateOfCreation = table.Column<DateTime>(type: "datetime2", nullable: false),
                     LastModified = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -203,10 +213,16 @@ namespace ShakSphere.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_PostComment", x => x.CommentId);
                     table.ForeignKey(
+                        name: "FK_PostComment_ApplicationUsers_AppUserId",
+                        column: x => x.AppUserId,
+                        principalTable: "ApplicationUsers",
+                        principalColumn: "AppUserId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
                         name: "FK_PostComment_Posts_PostId",
                         column: x => x.PostId,
                         principalTable: "Posts",
-                        principalColumn: "Postid",
+                        principalColumn: "PostId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -225,7 +241,7 @@ namespace ShakSphere.Infrastructure.Migrations
                         name: "FK_PostInteraction_Posts_PostId",
                         column: x => x.PostId,
                         principalTable: "Posts",
-                        principalColumn: "Postid",
+                        principalColumn: "PostId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -234,8 +250,8 @@ namespace ShakSphere.Infrastructure.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "7b698537-4c9b-4e3c-b3b9-2c6d4bc36527", null, "User", "USER" },
-                    { "8180e635-0481-444a-9846-2b5c5fb0d627", null, "Admin", "ADMIN" }
+                    { "2fff4525-217a-477a-a8ec-3611ad045aca", null, "Admin", "ADMIN" },
+                    { "50c6f05b-db35-4cb3-9a29-24f649c774f0", null, "User", "USER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -278,6 +294,11 @@ namespace ShakSphere.Infrastructure.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PostComment_AppUserId",
+                table: "PostComment",
+                column: "AppUserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PostComment_PostId",
                 table: "PostComment",
                 column: "PostId");
@@ -288,9 +309,9 @@ namespace ShakSphere.Infrastructure.Migrations
                 column: "PostId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Posts_AppUserId1",
+                name: "IX_Posts_AppUserId",
                 table: "Posts",
-                column: "AppUserId1");
+                column: "AppUserId");
         }
 
         /// <inheritdoc />
@@ -321,10 +342,13 @@ namespace ShakSphere.Infrastructure.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
                 name: "Posts");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "ApplicationUsers");
         }
     }
 }

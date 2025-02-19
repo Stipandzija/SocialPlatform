@@ -1,4 +1,8 @@
-﻿namespace ShakSphere.API.Controllers.V1
+﻿using Microsoft.AspNetCore.Authorization;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+
+namespace ShakSphere.API.Controllers.V1
 {
     [ApiController]
     [ApiVersion("1.0")]
@@ -12,8 +16,29 @@
             _mapper = mapper;
             _mediator = mediator;
         }
+        [HttpPost]
+        [ModelValidation]
+        [Authorize(JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> CreatePost([FromBody] PostCreateDTO postCreateDTO)
+        {
+            var UserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+            var command = new CreatePostCommand()
+            {
+                UserId = Guid.Parse(UserId),
+                TextContent = postCreateDTO.TextContent
+            };
+            var result = await _mediator.Send(command);
+            if (!result.Success)
+            {
+                return BadRequest(result);
+            }
+            var mapped = _mapper.Map<PostCreateResponseDTO>(result.Payload);
+            return CreatedAtAction(nameof(GetPostById), new { Id = mapped.AppuserId }, mapped);
+        }
+        //[Authorize(JwtBearerDefaults.AuthenticationScheme)]
         [HttpGet]
+        [ModelValidation]
         public async Task<IActionResult> GetAllPost()
         {
             var result = await _mediator.Send(new GetAllPostQuery());
@@ -25,6 +50,7 @@
             return Ok(mapped);
         }
         [HttpGet("{Id}")]
+        [ModelValidation]
         public async Task<IActionResult> GetPostById([FromRoute] string Id)
         {
             var query = new GetPostByIdQuery { Id = Guid.Parse(Id) };
@@ -36,43 +62,36 @@
             var mapped = _mapper.Map<PostResponseDTO>(result.Payload);
             return Ok(mapped);
         }
-        [HttpPost]
-        public async Task<IActionResult> CreatePost([FromBody] PostCreateDTO postCreateDTO)
-        {
-            var command = new CreatePostCommand()
-            {
-                UserId = Guid.Parse(postCreateDTO.AppUserId.ToString()),
-                TextContent = postCreateDTO.TextContent
-            };
-            var result = await _mediator.Send(command);
-            if (!result.Success)
-            {
-                return BadRequest(result);
-            }
-            var mapped = _mapper.Map<PostCreateDTO>(result.Payload);
-            return CreatedAtAction(nameof(GetPostById), new { Id = mapped.AppUserId }, mapped);
-        }
         [HttpPut("{Id}")]
+        [ModelValidation]
+        [Authorize(JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> UpdatePost([FromRoute] string Id,[FromBody] PostUpdateDTO postUpdateDTO) 
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             var command = new UpdatePostCommand()
             {
                 PostId = Guid.Parse(Id),
-                text = postUpdateDTO.TextContent
+                text = postUpdateDTO.TextContent,
+                UserId = Guid.Parse(userId),
+                
             };
             var result = await _mediator.Send(command);
             if (!result.Success)
             {
                 return BadRequest(result);
             }
-            var mapped = _mapper.Map<PostCreateDTO>(result.Payload);
-            return CreatedAtAction(nameof(GetPostById), new { Id = mapped.AppUserId },mapped);
+            var mapped = _mapper.Map<PostCreateResponseDTO>(result.Payload);
+            return CreatedAtAction(nameof(GetPostById), new { Id = mapped.AppuserId },mapped);
         }
 
         [HttpDelete("{Id}")]
-        public async Task<IActionResult> DeletePost([FromRoute] string Id)
+        [Authorize(JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<IActionResult> DeletePost()
         {
-            var command = new DeletePostCommand() { Id = Guid.Parse(Id) };
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            var command = new DeletePostCommand() { Id = Guid.Parse(userId) };
             var result = await _mediator.Send(command);
             if (!result.Success)
             {
@@ -93,20 +112,20 @@
             var mappedComments = _mapper.Map<List<PostCommentResponseDTO>>(result.Payload);
             return Ok(mappedComments);
         }
+
         [HttpPost("{postId}/comments")]
+        [ModelValidation]
+        [Authorize(JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> AddComment([FromRoute] string postId, [FromBody] CreateCommentDTO createCommentDTO)
             // TO Do provjera guida unutar zahtjeva
         {
-            if (!Guid.TryParse(createCommentDTO.UserId, out var UserId)) 
-            {
-                return BadRequest("Guid nije pravilnog formata");
-            }
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             var command = new AddCommentCommand
             {
                 PostId = Guid.Parse(postId),
                 Comment = createCommentDTO.Text,
-                UserId = UserId
+                UserId = Guid.Parse(userId)
             };
 
             var result = await _mediator.Send(command);

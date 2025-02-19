@@ -1,6 +1,6 @@
 ﻿namespace ShakSphere.Application.Contracts.UserProfile.Response
 {
-    public record AppUserResponseDTO
+    public record UserProfileResponseDTO
     {
         public Guid AppUserId { get; set; }
         public BasicInfoResponseDTO BasicInfo { get; set; }

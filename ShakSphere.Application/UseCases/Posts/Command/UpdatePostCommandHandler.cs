@@ -18,13 +18,13 @@ namespace ShakSphere.Application.UseCases.Posts.Command
         public async Task<ResponseStatus<Post>> Handle(UpdatePostCommand request, CancellationToken cancellationToken)
         {   
             var response = new ResponseStatus<Post>();
-            var post = await _appDbContext.Posts.FirstOrDefaultAsync(x => x.Postid == request.PostId, cancellationToken);
-            if (post == null)
+            var post = await _appDbContext.Posts.FirstOrDefaultAsync(x => x.PostId == request.PostId, cancellationToken);
+            if (post == null || post.AppUserId!=request.UserId)//ukoliko je null odmah ce vratit bez sljedece provjere
             {
                 response.Success = false;
                 response.Errors.Add(new ProblemDetails
                 {
-                    Title = "Post not found",
+                    Title = "Post Update somthing wentwrong, notauthorized or not valid post",
                     Status = (int)HttpStatusCode.NotFound
                 });
                 return response;

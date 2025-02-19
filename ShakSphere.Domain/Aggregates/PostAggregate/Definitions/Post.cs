@@ -7,7 +7,7 @@ namespace ShakSphere.API.Aggregates.PostAggregate.Definitions
 {
     public class Post
     {
-        public Guid Postid { get; private set; }
+        public Guid PostId { get; private set; }
         public Guid AppUserId { get; private set; }
         public ApplicationUser AppUser { get; private set; }
         public string TextContent { get; private set; }
@@ -21,7 +21,7 @@ namespace ShakSphere.API.Aggregates.PostAggregate.Definitions
             var validation = new PostValidation();
             var post = new Post
             {
-                Postid = Guid.NewGuid(),
+                PostId = Guid.NewGuid(),
                 AppUser = applicationUser,
                 AppUserId = appUserId,
                 TextContent = textContext,

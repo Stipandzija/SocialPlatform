@@ -11,5 +11,6 @@ namespace ShakSphere.Application.UseCases.AppUserProfile.Commands
         public string FirstName { get; set; }
         public string? LastName { get; set; }
         public string? CurrentCity { get; set; }
+        public string Email { get; set; }
     }
 }

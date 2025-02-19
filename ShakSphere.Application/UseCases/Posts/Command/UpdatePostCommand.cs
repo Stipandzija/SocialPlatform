@@ -8,5 +8,6 @@ namespace ShakSphere.Application.UseCases.Posts.Command
     {
         public Guid PostId { get; set; }
         public string text { get; set; }
+        public Guid UserId { get; set; }
     }
 }

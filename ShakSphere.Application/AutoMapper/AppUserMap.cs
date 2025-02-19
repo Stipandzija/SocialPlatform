@@ -16,11 +16,11 @@ namespace ShakSphere.Application.AutoMapper
     {
         public AppUserMap()
         {
-            CreateMap<AppUserCreateRequestDTO, CreateUserCommand>();
-            CreateMap<ApplicationUser, AppUserResponseDTO>();
+            CreateMap<ApplicationUser, UserProfileResponseDTO>()
+                .ForMember(dest => dest.BasicInfo, opt => opt.MapFrom(src => src.BasicInfo));
             CreateMap<BasicInfo, BasicInfoResponseDTO>();
-            CreateMap<AppUserUpdateRequestDTO, UpdateUserCommand>();
+            CreateMap<UserProfileUpdateRequestDTO, UpdateUserCommand>();
         }
-
     }
+
 }
