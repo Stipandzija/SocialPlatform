@@ -47,7 +47,7 @@ namespace ShakSphere.Application.UseCases.AppUserProfile.Commands
             try 
             {
                 var info = BasicInfo.UpdateBasicInfo(request.FirstName, request.LastName, request.CurrentCity, request.Email);
-                user.UpdateUserBasicInfo(info);
+                user.UpdateBasicInfo(info);
                 _context.ApplicationUsers.Update(user);
                 await _context.SaveChangesAsync(cancellationToken);
                 var userUpdate = await _userManager.FindByEmailAsync(request.Email);

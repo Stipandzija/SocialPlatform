@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
 namespace ShakSphere.API.Controllers.V1
@@ -51,13 +50,21 @@ namespace ShakSphere.API.Controllers.V1
         }
         [HttpGet("{Id}")]
         [ModelValidation]
+        [Authorize(JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetPostById([FromRoute] string Id)
         {
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
             var query = new GetPostByIdQuery { Id = Guid.Parse(Id) };
             var result = await _mediator.Send(query);
             if (!result.Success)
             {
                 return BadRequest(result);
+            }
+            //To DO provjera u queriu
+            if (result.Payload.AppUserId.ToString() != userId) 
+            {
+                return Forbid();
             }
             var mapped = _mapper.Map<PostResponseDTO>(result.Payload);
             return Ok(mapped);
@@ -101,6 +108,8 @@ namespace ShakSphere.API.Controllers.V1
         }
 
         [HttpGet("{postId}/comments")]
+        [ModelValidation]
+        [Authorize(JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetPostComments([FromRoute] string postId)
         {
             var query = new GetPostCommentsByIDQuery { PostId = Guid.Parse(postId) };

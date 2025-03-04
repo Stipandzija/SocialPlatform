@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ShakSphere.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using ShakSphere.Infrastructure.Data;
 namespace ShakSphere.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250304123745_thirdmigration")]
+    partial class thirdmigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,13 +54,13 @@ namespace ShakSphere.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "d1598288-6f2d-404e-a321-49d0ec6cc05f",
+                            Id = "da54ae7e-8cf9-4102-abb1-56e3d45aeeb2",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "bafa922a-0c7c-4219-9c12-2c1ea57430d3",
+                            Id = "45a50614-b848-4f1a-a6f5-5dd778b85990",
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -266,10 +269,7 @@ namespace ShakSphere.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime?>("DateResponded")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("DateSent")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid>("ReceiverId")
@@ -282,8 +282,6 @@ namespace ShakSphere.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("RequestId");
-
-                    b.HasIndex("ReceiverId");
 
                     b.HasIndex("SenderId");
 
@@ -318,7 +316,7 @@ namespace ShakSphere.Infrastructure.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("PostComments");
+                    b.ToTable("PostComment");
                 });
 
             modelBuilder.Entity("ShakSphere.Domain.Aggregates.PostAggregate.Definitions.PostInteraction", b =>
@@ -337,7 +335,7 @@ namespace ShakSphere.Infrastructure.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("PostInteractions");
+                    b.ToTable("PostInteraction");
                 });
 
             modelBuilder.Entity("ShakSphere.Domain.Aggregates.UserProfileAggregate.Definitions.ApplicationUser", b =>
@@ -351,28 +349,26 @@ namespace ShakSphere.Infrastructure.Migrations
 
                     b.Property<string>("IdentityId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
 
                     b.HasKey("AppUserId");
 
-                    b.HasIndex("IdentityId")
-                        .IsUnique();
-
                     b.ToTable("ApplicationUsers");
                 });
 
-            modelBuilder.Entity("UserFriends", b =>
+            modelBuilder.Entity("ShakSphere.Domain.Aggregates.UserProfileAggregate.Definitions.UserFriends", b =>
                 {
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid>("FriendId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("UserId", "FriendId");
+                    b.HasKey("Id");
 
                     b.HasIndex("FriendId");
 
@@ -443,21 +439,11 @@ namespace ShakSphere.Infrastructure.Migrations
 
             modelBuilder.Entity("ShakSphere.Domain.Aggregates.FriendshipAggregate.FriendRequest", b =>
                 {
-                    b.HasOne("ShakSphere.Domain.Aggregates.UserProfileAggregate.Definitions.ApplicationUser", "Receiver")
-                        .WithMany()
-                        .HasForeignKey("ReceiverId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("ShakSphere.Domain.Aggregates.UserProfileAggregate.Definitions.ApplicationUser", "Sender")
-                        .WithMany()
+                    b.HasOne("ShakSphere.Domain.Aggregates.UserProfileAggregate.Definitions.ApplicationUser", null)
+                        .WithMany("FriendRequests")
                         .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Receiver");
-
-                    b.Navigation("Sender");
                 });
 
             modelBuilder.Entity("ShakSphere.Domain.Aggregates.PostAggregate.Definitions.PostComment", b =>
@@ -517,17 +503,11 @@ namespace ShakSphere.Infrastructure.Migrations
                     b.Navigation("BasicInfo");
                 });
 
-            modelBuilder.Entity("UserFriends", b =>
+            modelBuilder.Entity("ShakSphere.Domain.Aggregates.UserProfileAggregate.Definitions.UserFriends", b =>
                 {
                     b.HasOne("ShakSphere.Domain.Aggregates.UserProfileAggregate.Definitions.ApplicationUser", null)
-                        .WithMany()
+                        .WithMany("Friends")
                         .HasForeignKey("FriendId")
-                        .OnDelete(DeleteBehavior.ClientCascade)
-                        .IsRequired();
-
-                    b.HasOne("ShakSphere.Domain.Aggregates.UserProfileAggregate.Definitions.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -537,6 +517,13 @@ namespace ShakSphere.Infrastructure.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("PostInteraction");
+                });
+
+            modelBuilder.Entity("ShakSphere.Domain.Aggregates.UserProfileAggregate.Definitions.ApplicationUser", b =>
+                {
+                    b.Navigation("FriendRequests");
+
+                    b.Navigation("Friends");
                 });
 #pragma warning restore 612, 618
         }
