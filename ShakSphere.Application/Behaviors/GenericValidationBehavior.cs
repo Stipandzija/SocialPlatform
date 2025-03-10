@@ -49,7 +49,6 @@ namespace ShakSphere.Application.Behaviors
             //generiraj response kao novu istancu ResponseStatus<T> npr ResponseStatus<ApplicationUser>
             var response = Activator.CreateInstance(typeof(ResponseStatus<>).MakeGenericType(responseType))!;
 
-
             var responseStatus = (ResponseStatus<object>)response;//castamo na generiki tip radi pristupa svostvima tipa
             responseStatus.Errors = new List<ProblemDetails>();
 

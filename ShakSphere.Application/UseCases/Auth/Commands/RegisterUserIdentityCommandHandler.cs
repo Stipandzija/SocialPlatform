@@ -48,7 +48,7 @@ namespace ShakSphere.Application.UseCases.Auth.Commands
                     return GenerateErrorResponse("Cannot create user, try again"); ;
                 }
 
-                await SaveUserProfileAsync(user.Id, user.Email, cancellationToken);
+                await SaveUserProfileAsync(user.UserName,user.Id, user.Email, cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
             }
             catch
@@ -96,9 +96,9 @@ namespace ShakSphere.Application.UseCases.Auth.Commands
             return response;
         }
 
-        private async Task SaveUserProfileAsync(string userId, string email, CancellationToken cancellationToken)
+        private async Task SaveUserProfileAsync(string username,string userId, string email, CancellationToken cancellationToken)
         {
-            var basicInfo = BasicInfo.CreateBasicInfo("", "", DateTime.Now, "", email);
+            var basicInfo = BasicInfo.CreateBasicInfo(username, "", DateTime.Now, "", email);
             var newUser = ApplicationUser.CreateUserProfile(userId, basicInfo);
             _appDbContext.ApplicationUsers.Add(newUser);
             await _appDbContext.SaveChangesAsync(cancellationToken);

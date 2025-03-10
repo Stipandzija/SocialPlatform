@@ -1,4 +1,6 @@
-﻿using ShakSphere.Application.Security;
+﻿using Microsoft.AspNetCore.RateLimiting;
+using ShakSphere.Application.Security;
+using System.Threading.RateLimiting;
 
 namespace ShakSphere.API.Configuration.DependencyInjection.Implementations
 {
@@ -16,6 +18,14 @@ namespace ShakSphere.API.Configuration.DependencyInjection.Implementations
             builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddProblemDetails();
 
+            builder.Services.AddRateLimiter(_ => _
+                .AddFixedWindowLimiter(policyName: "fixed", options =>
+                {
+                    options.PermitLimit = 10;
+                    options.Window = TimeSpan.FromSeconds(10);
+                    options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                    options.QueueLimit = 5;
+                }));
 
             builder.Services.AddControllers();
 

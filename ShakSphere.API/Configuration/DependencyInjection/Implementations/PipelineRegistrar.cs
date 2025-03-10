@@ -4,6 +4,7 @@
     {
         public void RegisterPipelineComponents(WebApplication app)
         {
+            app.UseExceptionHandler();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -14,12 +15,11 @@
                 }
             });
 
+            app.UseRateLimiter();
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseExceptionHandler();
 
             app.MapControllers();
         }

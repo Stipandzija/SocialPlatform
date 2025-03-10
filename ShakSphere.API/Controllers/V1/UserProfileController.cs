@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using ShakSphere.Application.UseCases.AppUserProfile.Queries;
 using System.Security.Claims;
 
 namespace ShakSphere.API.Controllers.V1
