@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using ShakSphere.Application.Contracts.FriendRequests;
-using ShakSphere.Application.UseCases.AppUserProfile.Queries;
+using ShakSphere.Application.UseCases.FriendRequests.Command;
 using ShakSphere.Application.UseCases.FriendRequests.Query;
 using System.Security.Claims;
 
@@ -48,6 +47,8 @@ public class FriendController : ControllerBase
         return Ok(result.Payload);
     }
     [HttpPost("GetUserNamesByIds")]
+    [ModelValidation]
+    [Authorize(JwtBearerDefaults.AuthenticationScheme)]
     public async Task<IActionResult> GetUserNamesByIds([FromBody] List<Guid> userIds)
     {
         if (userIds == null || !userIds.Any())
@@ -64,6 +65,29 @@ public class FriendController : ControllerBase
         return Ok(userNames);
     }
 
+    [HttpDelete("removeFriend")]
+    [ModelValidation]
+    [Authorize(JwtBearerDefaults.AuthenticationScheme)]
+    public async Task<IActionResult> RemoveFriend([FromBody] Guid friendId)
+    {
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var userGuidId))
+            return Unauthorized();
 
+        if (friendId == Guid.Empty)
+            return BadRequest("Guid is empty");
 
+        if (userGuidId == friendId)
+            return BadRequest("Korisnik nemoze imat isti Id kao prijatelj");
+
+        var command = new RemoveFriendCommand
+        {
+            UserId = userGuidId,
+            FriendId = friendId
+        };
+        var response = await _mediator.Send(command);
+        if(response.Success)
+            return NoContent();
+        return BadRequest(response.Errors);
+    }
 }
